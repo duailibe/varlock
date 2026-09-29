@@ -57,11 +57,12 @@ export const commandFn: TypedGunshiCommandFn<typeof commandSpec> = async (ctx) =
   // For all other formats, exit on errors as before.
   let hasSchemaErrors = false;
   let hadSchemaOutput = false;
+  let noSchemaError: string | undefined;
   if (outputFormat === 'json-full') {
     const result = checkForSchemaErrors(envGraph, { noThrow: true });
     hasSchemaErrors = result.hasErrors;
     hadSchemaOutput = result.hasOutput;
-    checkForNoEnvFiles(envGraph, { noThrow: true });
+    noSchemaError = checkForNoEnvFiles(envGraph, { noThrow: true });
   } else {
     const result = checkForSchemaErrors(envGraph);
     hadSchemaOutput = result.hasOutput;
@@ -170,6 +171,12 @@ export const commandFn: TypedGunshiCommandFn<typeof commandSpec> = async (ctx) =
           item.value = '[REDACTED]';
         }
       }
+    }
+    // no schema is an error for json-full consumers too (auto-load, framework integrations),
+    // not just for the other formats
+    if (noSchemaError) {
+      serialized.errors ??= {};
+      serialized.errors.root = [...serialized.errors.root ?? [], noSchemaError];
     }
     console.log(JSON.stringify(serialized, null, indent));
     // Output JSON to stdout even on failure (so consumers can parse err.stdout),

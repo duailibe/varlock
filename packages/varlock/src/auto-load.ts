@@ -1,4 +1,4 @@
-import { execSyncVarlock, VarlockExecError, warnIfNoConfigLoaded } from './lib/exec-sync-varlock';
+import { execSyncVarlock, VarlockExecError } from './lib/exec-sync-varlock';
 import { encryptEnvBlobSync, generateEncryptionKeyHex, isEncryptedBlob } from './runtime/crypto';
 import { evaluateInjectedEnvReuse } from './lib/injected-env-reuse';
 import { createDebug } from './lib/debug';
@@ -78,7 +78,6 @@ function autoLoad() {
       });
       parsed = JSON.parse(stdout);
       parsedJsonStr = stdout;
-      warnIfNoConfigLoaded(parsed);
     }
 
     // set parsed object on globalThis so initVarlockEnv() picks it up directly

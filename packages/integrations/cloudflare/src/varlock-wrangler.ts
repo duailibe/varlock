@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { randomBytes } from 'node:crypto';
 import { spawn, execSync } from 'node:child_process';
 
-import { execSyncVarlock, VarlockExecError, warnIfNoConfigLoaded } from 'varlock/exec-sync-varlock';
+import { execSyncVarlock, VarlockExecError } from 'varlock/exec-sync-varlock';
 import { encryptEnvBlobSync, generateEncryptionKeyHex } from 'varlock/encrypt-env';
 import { formatEnvLine } from './format-env-line';
 import {
@@ -99,14 +99,15 @@ function loadSerializedGraph(cwd?: string) {
       version: __VARLOCK_INTEGRATION_VERSION__,
     },
   });
-  const graph = JSON.parse(stdout) as {
-    basePath?: string,
-    sources: Array<{ label: string, enabled: boolean, path?: string, contentHash?: string }>,
-    settings?: { encryptInjectedEnv?: boolean },
-    config: Record<string, { value: unknown, isSensitive: boolean, isDynamic?: boolean }>,
+  return {
+    json: stdout,
+    graph: JSON.parse(stdout) as {
+      basePath?: string,
+      sources: Array<{ label: string, enabled: boolean, path?: string, contentHash?: string }>,
+      settings?: { encryptInjectedEnv?: boolean },
+      config: Record<string, { value: unknown, isSensitive: boolean, isDynamic?: boolean }>,
+    },
   };
-  warnIfNoConfigLoaded(graph);
-  return { json: stdout, graph };
 }
 
 type SerializedGraph = ReturnType<typeof loadSerializedGraph>['graph'];

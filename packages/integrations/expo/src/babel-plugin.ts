@@ -1,4 +1,4 @@
-import { execSyncVarlock, VarlockExecError, warnIfNoConfigLoaded } from 'varlock/exec-sync-varlock';
+import { execSyncVarlock, VarlockExecError } from 'varlock/exec-sync-varlock';
 import { initVarlockEnv } from 'varlock/env';
 import { patchGlobalConsole } from 'varlock/patch-console';
 import { createDebug, type SerializedEnvGraph } from 'varlock';
@@ -24,7 +24,6 @@ function loadVarlockConfig() {
     });
     process.env.__VARLOCK_ENV = stdout;
     varlockLoadedEnv = JSON.parse(stdout) as SerializedEnvGraph;
-    warnIfNoConfigLoaded(varlockLoadedEnv);
     configIsValid = true;
 
     // Make the loaded env available on globalThis so that any module instance
