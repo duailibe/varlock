@@ -10,7 +10,7 @@ import { patchGlobalConsole } from 'varlock/patch-console';
 import { patchGlobalServerResponse } from 'varlock/patch-server-response';
 import { patchGlobalResponse } from 'varlock/patch-response';
 import { createDebug, type SerializedEnvGraph } from 'varlock';
-import { execSyncVarlock, VarlockExecError } from 'varlock/exec-sync-varlock';
+import { execSyncVarlock, VarlockExecError, warnIfNoConfigLoaded } from 'varlock/exec-sync-varlock';
 import { encryptEnvBlobSync, generateEncryptionKeyHex } from 'varlock/encrypt-env';
 
 import { createReplacerTransformFn, SUPPORTED_FILES } from '@env-spec/utils/ast-replacer';
@@ -136,6 +136,7 @@ function reloadConfig(cwd?: string) {
     });
     process.env.__VARLOCK_ENV = stdout;
     varlockLoadedEnv = JSON.parse(stdout) as SerializedEnvGraph;
+    warnIfNoConfigLoaded(varlockLoadedEnv);
     varlockLastError = undefined;
     lastErrorAt = 0;
     configIsValid = true;

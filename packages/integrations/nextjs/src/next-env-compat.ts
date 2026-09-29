@@ -11,7 +11,7 @@ import { createHash } from 'crypto';
 import type { SerializedEnvGraph } from 'varlock';
 import { initVarlockEnv, resetRedactionMap } from 'varlock/env';
 import { patchGlobalConsole } from 'varlock/patch-console';
-import { execSyncVarlock, VarlockExecError } from 'varlock/exec-sync-varlock';
+import { execSyncVarlock, VarlockExecError, warnIfNoConfigLoaded } from 'varlock/exec-sync-varlock';
 
 export type Env = { [key: string]: string | undefined };
 export type LoadedEnvFiles = Array<{
@@ -670,6 +670,7 @@ export function loadEnvConfig(
       logUserInfo('✅ [varlock] env reloaded and validated');
     }
     varlockLoadedEnv = JSON.parse(stdout);
+    warnIfNoConfigLoaded(varlockLoadedEnv);
   } catch (err) {
     if ((err as any).message.includes('Unable to find varlock executable')) {
       // In production the binary may not exist — e.g., on serverless platforms

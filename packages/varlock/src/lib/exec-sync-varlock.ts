@@ -5,6 +5,9 @@ import { execFileSync, execSync } from 'node:child_process';
 import { isBunRuntime, isBunStandaloneExecutable } from './detect-runtime';
 import { CLI_CHILD_MARKER } from './cli-child-marker';
 
+// re-exported so integrations (which already import this entry) can reach it
+export { warnIfNoConfigLoaded, isNoSchemaAllowed, ALLOW_NO_SCHEMA_ENV_VAR } from './no-schema-check';
+
 const isWindows = () => /^win/i.test(os.platform());
 
 
